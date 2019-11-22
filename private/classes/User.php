@@ -48,6 +48,7 @@ class User {
     //proveri da li postoji korisnik
     public function find($user = null, $field = 'email') {
         if($user) {
+            $field = (is_numeric($user)) ? 'korisnikID' : 'email';
             $data = $this->_db->get('ets_korisnici', array($field, '=', $user));
             
             if($data->count()) {
