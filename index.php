@@ -4,12 +4,7 @@ require_once './private/init.php';
 
 //echo Session::get(Config::get('session/session_name'));
 $user = new User();
-echo '<br>' . is_object($user);
-echo '<br>' . is_a($user, 'User');
-echo '<pre>';
-print_r($user);
-echo '</pre>';
-echo $user->data()->korisnikID;
+echo $user->data()->ime;
 
 if($user->isLoggedIn()) {
     echo 'Ulogovan';
