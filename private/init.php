@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $GLOBALS['config'] = array(
@@ -19,10 +20,20 @@ $GLOBALS['config'] = array(
 );
 
 spl_autoload_register(function($class) {
-    require_once 'classes/'. $class . '.php';
+    require_once 'classes/' . $class . '.php';
 });
 
 require_once ('functions.php');
+
+if (Cookie::exists(Config::get('remember/cookie_name')) && !Session::exists(Config::get('session/session_name'))) {
+    $hash = Cookie::get(Config::get('remember/cookie_name'));
+    $hashCheck = DB::getInstance()->get('ets_sesije', array('hash', '=', $hash));
+
+    if ($hashCheck->count()) {
+        $user = new User($hashCheck->first()->korisnikID);
+        $user->login();
+    }
+}
 
 
 
