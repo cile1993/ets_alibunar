@@ -2,19 +2,6 @@
 <?php
 require_once './private/init.php';
 
-// $user = DB::getInstance()->get('users', array('username', '=', 'alex'));
-// $userInsert = DB::getInstance()->update('users', 3, array(
-// 	'password' => 'newpassword',
-// 	'name' => 'Dale Garrett'
-// 	));
-// if(!$user->count()){
-// 	echo 'No user';
-// }else{
-// 	// foreach($user->results() as $user){
-// 	// 	echo $user->username, '<br/>';
-// 	// }
-// 	echo $user->first()->username;
-// }
 if(Session::exists('home')){
 	echo '<p>' . Session::flash('home') . '</p>';
 }
