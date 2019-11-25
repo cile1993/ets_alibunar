@@ -28,11 +28,35 @@ class User {
         }
     }
 
+    // apdejt profila
+    public function update($fields = array(), $id = null) {
+        if (!$id && $this->isLoggedIn()) {
+            $id = $this->data()->korisnikID;
+        }
+        if (!$this->_db->update('ets_korisnici', $id, $fields)) {
+            throw new Exception('There was a problem updating your details.');
+        }
+    }
+
     //Metoda za kreiranje korisnika
     public function create($fields = array()) {
         if ($this->_db->insert('ets_korisnici', $fields)) {
             echo 'Uspesno ste se registrovali';
         }
+    }
+    
+    //provera dozvola kroz json
+    public function hasPermission($key) {
+        $group = $this->_db->get('ets_grupe', array('grupeID', '=', $this->data()->pristup));
+        
+        if($group->count()) {
+            $permissions = json_decode($group->first()->pristup, true);
+            
+            if($permissions[$key] == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function data() {
@@ -47,11 +71,11 @@ class User {
     public function isLoggedIn() {
         return $this->_isLoggedIn;
     }
-    
+
     //unset sesije i brisanje cookija
     public function logout() {
         $this->_db->delete('ets_sesije', array('korisnikID', '=', $this->data()->korisnikID));
-        
+
         Session::delete($this->_sessionName);
         Cookie::delete($this->_cookieName);
     }
@@ -112,5 +136,5 @@ class User {
         }
         return false;
     }
+
 }
-    
