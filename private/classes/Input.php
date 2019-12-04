@@ -25,4 +25,12 @@ class Input {
         return '';
     }
     
+    public static function isPost($param) {
+        $type = array('POST', 'post');
+        if (!in_array($param, $type)) {
+            return false;
+        }
+        return true;
+    }
+    
 }

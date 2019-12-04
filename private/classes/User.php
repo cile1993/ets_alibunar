@@ -6,6 +6,7 @@ class User {
             $_data,
             $_sessionName,
             $_cookieName,
+            $_pristup,
             $_isLoggedIn;
 
     public function __construct($user = null) {
@@ -20,7 +21,7 @@ class User {
                 if ($this->find($user)) {
                     $this->_isLoggedIn = true;
                 } else {
-                    // logout
+                    //
                 }
             }
         } else {
@@ -38,25 +39,40 @@ class User {
         }
     }
 
+    //apdejt admin
+    public function updateAdmin($fields = array(), $email = null) {
+            $email = Input::get('user');
+            $this->_db->updateAdmin('ets_korisnici', $email, $fields);
+    }
+    
+    //reset
+    public function reset($fields = array(), $email = null) {
+            $this->_db->updateAdmin('ets_korisnici', $email, $fields);
+    }
+
     //Metoda za kreiranje korisnika
     public function create($fields = array()) {
         if ($this->_db->insert('ets_korisnici', $fields)) {
             echo 'Uspesno ste se registrovali';
         }
     }
-    
+
     //provera dozvola kroz json
     public function hasPermission($key) {
         $group = $this->_db->get('ets_grupe', array('grupeID', '=', $this->data()->pristup));
-        
-        if($group->count()) {
+
+        if ($group->count()) {
             $permissions = json_decode($group->first()->pristup, true);
-            
-            if($permissions[$key] == true) {
+
+            if ($permissions[$key] == true) {
                 return true;
             }
         }
         return false;
+    }
+    
+    public function isRegistered($email) {
+        return (!empty($this->_db->get('ets_korisnici', array('email', '=', $email))->results()));
     }
 
     public function data() {
@@ -100,6 +116,7 @@ class User {
         // ako korisnik ima cookie a ne sesiju postavi mu sesiju
         if (!$email && !$password && $this->exists()) {
             Session::put($this->_sessionName, $this->data()->korisnikID);
+            Session::put($this->_pristup, $this->data()->pristup);
         } else {
             $user = $this->find($email, 'email');
 
@@ -110,7 +127,7 @@ class User {
                 if ($this->data()->lozinka === Hash::make($password)) {
                     //Postavljanje sesije
                     Session::put($this->_sessionName, $this->data()->korisnikID);
-
+                    Session::put($this->_pristup, $this->data()->pristup);
                     if ($remember) {
                         //proveri da li ima setovane sesije u bazi
                         $hash = Hash::unique();

@@ -1,6 +1,17 @@
 <?php
-
 session_start();
+
+function getBaseUrl() 
+{
+    $currentPath = $_SERVER['PHP_SELF'];
+    $pathInfo = pathinfo($currentPath);
+    $hostName = $_SERVER['HTTP_HOST'];
+    $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
+    define('URL', $protocol.'://'.$hostName.$pathInfo['dirname']."/");
+    return URL;
+}
+
+define('AVATARS', getBaseUrl().'img/avatars/');
 
 $GLOBALS['config'] = array(
     'mysql' => array(
@@ -16,6 +27,12 @@ $GLOBALS['config'] = array(
     'session' => array(
         'session_name' => 'user',
         'token_name' => 'token'
+    ),
+    'avatar' => array(
+        'file_size' => 200000,
+        'file_type' => array('jpg', 'jpeg', 'png', 'gif'),
+        'width' => 300,
+        'height' => 200
     )
 );
 
@@ -34,6 +51,8 @@ if (Cookie::exists(Config::get('remember/cookie_name')) && !Session::exists(Conf
         $user->login();
     }
 }
+
+date_default_timezone_set('Europe/Belgrade');
 
 
 

@@ -1,35 +1,44 @@
 <?php
 require_once './private/init.php';
+$usert = new User();
 
-if (Input::exists()) {
-    if (Token::check(Input::get('token'))) {
-        $validate = new Validate();
-        $validation = $validate->check($_POST, array(
-            'email' => array('required' => true),
-            'password' => array('required' => true)
-        ));
+if (Session::exists('reset')) {
+    echo '<p>' . Session::msg('reset') . '</p>';
+}
 
-        //Ako prodje validaciju pravi korisnika
-        if ($validation->passed()) {
-            $user = new User();
-            $remember = (Input::get('remember') === 'on' ) ? true : false;
-            
-            
-            //Pokupi unose sa polja i provuci kroz login funkciju
-            $login = $user->login(Input::get('email'), Input::get('password'), $remember);
+if (!$usert->isLoggedIn()) {
+    if (Input::exists()) {
+        if (Token::check(Input::get('token'))) {
+            $validate = new Validate();
+            $validation = $validate->check($_POST, array(
+                'email' => array('required' => true),
+                'password' => array('required' => true)
+            ));
 
-            //Odradi na osnovu da li je login funkcija vratila true ili false
-            if ($login) {
-                //echo 'Uspesno ste se prijavili!';
-                Redirect::to('index.php');
-            } else {
-                echo '<p>Pogresan email/password</p>';
-            }
-        } else
-            foreach ($validation->errors() as $error) {
-                echo $error, '<br>';
-            }
+            //Ako prodje validaciju pravi korisnika
+            if ($validation->passed()) {
+                $user = new User();
+                $remember = (Input::get('remember') === 'on' ) ? true : false;
+
+
+                //Pokupi unose sa polja i provuci kroz login funkciju
+                $login = $user->login(Input::get('email'), Input::get('password'), $remember);
+
+                //Odradi na osnovu da li je login funkcija vratila true ili false
+                if ($login) {
+                    //echo 'Uspesno ste se prijavili!';
+                    Redirect::to('index.php');
+                } else {
+                    echo '<p>Pogresan email/password</p>';
+                }
+            } else
+                foreach ($validation->errors() as $error) {
+                    echo $error, '<br>';
+                }
+        }
     }
+} else {
+    Redirect::to('index.php');
 }
 ?>
 
@@ -58,7 +67,7 @@ if (Input::exists()) {
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-key"></i></span>
                 </div>
-                <input type="password" name="password" class="form-control" placeholder="Lozinka" required>
+                <input type="password" name="password" class="form-control" placeholder="Lozinka" autocomplete="" required>
             </div>
             <div class="form-group">
                 <input type="submit" value="Potvrdi" class="btn float-right login_btn">

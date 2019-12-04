@@ -7,68 +7,77 @@ $user = new User();
 if (!$user->isLoggedIn()) {
     Redirect::to('index.php');
 }
+if ($user->hasPermission('admin')) {
+    $email = Input::get('user');
+    $user = new User($email);
+    if ($user->exists()) {
+        $data = $user->data();
+
 //proveri da li ima unosa u polju da ne posalje prazno
-if (Input::exists()) {
-    //proveri da li se token poklapa zbog csr
-    if (Token::check(Input::get('token'))) {
+        if (Input::exists()) {
+            //proveri da li se token poklapa zbog csr
+            if (Token::check(Input::get('token'))) {
 
-        $validate = new Validate();
-        $validation = $validate->check($_POST, array(
-            'ime' => array(
-                'name' => 'ime',
-                'required' => true,
-                'min' => 3,
-                'max' => 20
-            ),
-            'prezime' => array(
-                'name' => 'prezime',
-                'required' => true,
-                'min' => 3,
-                'max' => 25
-            ),
-            'email' => array(
-                'name' => 'email',
-                'required' => true,
-                'min' => 8,
-                'max' => 45,
-                'unique' => 'ets_korisnici'
-            ),
-            'smer' => array(
-                'name' => 'smer',
-                'min' => 5,
-                'max' => 35
-            ),
-            'telefon' => array(
-                'name' => 'telefon',
-                'required' => false,
-                'min' => 6,
-                'max' => 10
-            ),
-            'uloga' => array()
-        ));
-
-        if ($validation->passed()) {
-            try {
-                $user->update(array(
-                    'ime' => escape(Input::get('ime')),
-                    'prezime' => escape(Input::get('prezime')),
-                    'email' => escape(Input::get('email')),
-                    'smer_predmet' => escape(Input::get('smer')),
-                    'telefon' => escape(Input::get('telefon')),
-                    'pristup' => escape(Input::get('uloga'))
+                $validate = new Validate();
+                $validation = $validate->check($_POST, array(
+                    'ime' => array(
+                        'name' => 'ime',
+                        'required' => true,
+                        'min' => 3,
+                        'max' => 20
+                    ),
+                    'prezime' => array(
+                        'name' => 'prezime',
+                        'required' => true,
+                        'min' => 3,
+                        'max' => 25
+                    ),
+                    'email' => array(
+                        'name' => 'email',
+                        'required' => true,
+                        'min' => 8,
+                        'max' => 45
+                    ),
+                    'smer' => array(
+                        'name' => 'smer',
+                        'min' => 5,
+                        'max' => 35
+                    ),
+                    'telefon' => array(
+                        'name' => 'telefon',
+                        'required' => false,
+                        'min' => 6,
+                        'max' => 10
+                    ),
+                    'uloga' => array()
                 ));
 
-                Session::msg('home', 'Vasi podaci su azurirani!');
-                Redirect::to('index.php');
-            } catch (Exception $exc) {
-                die($exc->getMessage());
-            }
-        } else {
-            foreach ($validation->errors() as $error) {
-                echo $error, '<br>';
+                if ($validation->passed()) {
+                    try {
+                        $user->updateAdmin(array(
+                            'ime' => escape(Input::get('ime')),
+                            'prezime' => escape(Input::get('prezime')),
+                            'email' => escape(Input::get('email')),
+                            'smer_predmet' => escape(Input::get('smer')),
+                            'telefon' => escape(Input::get('telefon')),
+                            'pristup' => escape(Input::get('uloga'))
+                        ));
+
+                        Session::msg('home', 'Podaci su azurirani!');
+                        Redirect::to('index.php');
+                    } catch (Exception $exc) {
+                        die($exc->getMessage());
+                    }
+                } else {
+                    foreach ($validation->errors() as $error) {
+                        echo $error, '<br>';
+                    }
+                }
             }
         }
     }
+} else {
+    Redirect::to(404);
 }
 ?>
 

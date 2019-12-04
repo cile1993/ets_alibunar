@@ -27,7 +27,7 @@ class DB {
         }
         return self::$_instance;
     }
-    
+
     //query funkcija koja ce pozvati sql query sa bind parametrima kroz niz
     //query("SELECT * FROM ets_korisnici WHERE ime = ? and prezime = ?", array('Dejan', 'Cicovic'));
     public function query($sql, $params = array()) {
@@ -51,6 +51,7 @@ class DB {
         return $this;
     }
 
+
     // funkcija za query nad bazom
     // DB::getInstance()->action('select *', 'ets_korisnici', ['ime', '=', 'Dejan']);
     public function action($action, $table, $where = array()) {
@@ -71,12 +72,16 @@ class DB {
         }
         return false;
     }
-
+    
     // DB::getInstance()->get('ets_korisnici', array('username', '=', 'ime'));
     public function get($table, $where) {
         return $this->action('SELECT *', $table, $where);
     }
 
+    // DB::getInstance()->get('ets_korisnici', array('username', '=', 'ime'));
+    public function getAll($table) {
+        return $this->query("SELECT * FROM $table");
+    }
     //delete funkcija
     public function delete($table, $where) {
         return $this->action('DELETE', $table, $where);
@@ -121,6 +126,36 @@ class DB {
         $sql = "UPDATE {$table} SET {$set} WHERE korisnikID = {$id}";
 
         if (!$this->query($sql, $fields)->error()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function updateAdmin($table, $email, $fields) {
+        $set = '';
+        $x = 1;
+
+        foreach ($fields as $name => $value) {
+            $set .= "{$name} = '{$value}'";
+            if ($x < count($fields)) {
+                $set .= ', ';
+            }
+            $x++;
+        }
+
+        $sql = "UPDATE {$table} SET {$set} WHERE email = '{$email}'";
+
+        if (!$this->query($sql, $fields)->error()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function updateFirst($table, $field, $value, $id) {
+        $sql = "UPDATE {$table} SET {$field} = '{$value}' WHERE korisnikID = {$id}";
+        if (!$this->query($sql)->error()) {
             return true;
         }
 
