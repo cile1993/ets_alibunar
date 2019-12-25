@@ -4,10 +4,6 @@ require_once './private/init.php';
 $user = new User();
 $db = DB::getInstance();
 
-if (Session::exists('home')) {
-    echo '<p>' . Session::msg('home') . '</p>';
-}
-
 if (!$user->isLoggedIn()) {
     Redirect::to('index.php');
 }
@@ -33,11 +29,11 @@ if (Input::exists()) {
         if ($validation->passed()) {
             //proveri unose fajlova
             $validate1 = new Validate();
-            $validation1 = $validate1->checkImg($_POST, $_FILES['avatar']);
+            $validation1 = $validate1->checkImg($_POST, $_FILES['avatar'], Config::get('avatar/width'), Config::get('avatar/height'), Config::get('avatar/file_size'));
             if ($validation1) {
                 //provera trenutne lozinke
                 if (Hash::make(Input::get('lozinka')) !== $user->data()->lozinka) {
-                    echo 'Pogresna trenutna lozinka';
+                    Session::msg('home', 'Pogresna trenutna lozinka!');
                 } else {
                     //proveri da li postoji file za upload
                     if (!empty($_FILES)) {
@@ -57,33 +53,44 @@ if (Input::exists()) {
             }
         } else {
             foreach ($validation->errors() as $error) {
-                echo $error, '<br>';
+                Session::msg('home', $error . '<br>');
             }
         }
     }
 }
+
+include_once INC . 'header.php';
+
+if (Session::exists('home')) {
+    echo '</br><p>' . Session::msg('home') . '</p>';
+}
 ?>
+<div class="row">
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="field">
+            <label for="lozinka">Trenutna lozinka: </label>
+            <input type="password" name="lozinka" id="lozinka" value="" autocomplete="on" required>
+        </div>
 
-<form action="" method="post" enctype="multipart/form-data">
-    <div class="field">
-        <label for="lozinka">Trenutna lozinka: </label>
-        <input type="password" name="lozinka" id="lozinka" value="" autocomplete="on" required>
-    </div>
+        <div class="field">
+            <label for="lozinka_nova">Nova lozinka: </label>
+            <input type="password" name="lozinka_nova" id="lozinka_nova" value="">
+        </div>
 
-    <div class="field">
-        <label for="lozinka_nova">Nova lozinka: </label>
-        <input type="password" name="lozinka_nova" id="lozinka_nova" value="">
-    </div>
+        <div class="field">
+            <label for="lozinka_nova_ponovo">Ponovite novu lozinku: </label>
+            <input type="password" name="lozinka_nova_ponovo" id="lozinka_nova_ponovo" value="" autocomplete="off">
+        </div>
 
-    <div class="field">
-        <label for="lozinka_nova_ponovo">Ponovite novu lozinku: </label>
-        <input type="password" name="lozinka_nova_ponovo" id="lozinka_nova_ponovo" value="" autocomplete="off">
-    </div>
-
-    <div class="field">
-        <label for="avatar">Avatar: </label>
-        <input type="file" name="avatar" id="avatar" value="">
-    </div>
-    <input type="hidden" name="token" value="<?php echo Token::generate(); ?>">
-    <input type="submit" value="Potvrdi">
-</form>
+        <div class="field">
+            <label for="avatar">Avatar: </label>
+            <input type="file" name="avatar" id="avatar" value="">
+        </div>
+        <input type="hidden" name="token" value="<?php echo Token::generate(); ?>">
+        <input type="submit" value="Potvrdi">
+    </form>
+</div>
+<?php
+include_once INC . 'footer.php';
+include_once INC . 'scripts.php';
+?>

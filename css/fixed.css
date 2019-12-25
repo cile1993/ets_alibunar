@@ -1,20 +1,20 @@
-/*--- Extra Bootstrap Column Padding --*/
+/*====== Extra Bootstrap Column Padding ======*/
 [class*="col-"] {
   padding: 1rem;
 }
 
-/*--- Bootstrap Mobile Gutter Fix --*/
+/*====== Bootstrap Mobile Gutter Fix ======*/
 .row, .container-fluid {
 margin-left: 0px!important;
 margin-right: 0px!important;
 }
 
-/*--- Fix for Fixed Navbar jumping on scroll --*/
+/*====== Fix for Fixed Navbar jumping on scroll ======*/
 .fixed-top  {
  -webkit-backface-visibility: hidden;
 }
 
-/*--- Fixed Landing Page Section --*/
+/*====== Fixed Landing Page Section ======*/
 .landing {
   position: relative;
   width: 100%;
@@ -44,7 +44,7 @@ margin-right: 0px!important;
   will-change: transform;
 }
 
-/*--- iOS Fixed Background Image --*/
+/*====== iOS Fixed Background Image ======*/
 .fixed-background {
   position: relative;
   width: 100%;
@@ -70,4 +70,13 @@ margin-right: 0px!important;
   -webkit-transform: translateZ(0);
           transform: translateZ(0);
   will-change: transform;
+}
+
+/*====== Forms navbar fix ======*/
+.forms-fix {
+  position: relative;
+  margin-top: 95px;
+  width: 100%;
+  display: table;
+  z-index: -1;
 }

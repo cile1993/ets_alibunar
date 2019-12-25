@@ -61,7 +61,7 @@ class Validate {
     }
 
     // provera za upload slike
-    public function checkImg($postSrc, $fileSrc) {
+    public function checkImg($postSrc, $fileSrc, $widtha, $heighta, $size) {
         if (isset($postSrc)) {
             if (!empty($fileSrc["tmp_name"])) {
                 $fileinfo = getimagesize($fileSrc["tmp_name"]);
@@ -81,15 +81,13 @@ class Validate {
                     echo "Nedozvoljen format. Samo: jpg, png, gif";
                     return false;
                 }    // proveri velicinu
-                else if (($fileSrc["size"] > Config::get('avatar/file_size'))) {
-                    $size = Config::get('avatar/file_size') / 1000 . ' KB';
-                    echo "Velicina slike prelazi {$size}";
+                else if (($fileSrc["size"] > $size)) {
+                    $sizea = $size / 1000 . ' KB';
+                    echo "Velicina slike prelazi {$sizea} Kb";
                     return false;
                 }    // proveri dimenzije
-                else if ($width > Config::get('avatar/width') || $height > Config::get('avatar/height')) {
-                    $widthp = Config::get('avatar/width');
-                    $heightp = Config::get('avatar/height');
-                    echo "Dimenzije slike moraju biti do {$widthp} x {$heightp}";
+                else if ($width > $widtha || $height > $heighta ) {
+                    echo "Dimenzije slike moraju biti do {$widtha} x {$heighta}";
                     return false;
                 } else {
                     $target = "img/avatars/" . basename($fileSrc["name"]);
@@ -104,6 +102,22 @@ class Validate {
                 return true;
             }
         }
+    }
+
+    public function checkTopic($topic) {
+        if (empty($topic['naslov'])) {
+            $this->addError('Naslov je obavezan');
+        }
+
+        $existingTopic = $this->_db->action('SELECT *', 'ets_blog', array('naslov', '=', $topic['naslov']));
+        if ($existingTopic) {
+            $this->addError('Naslov vec postoji');
+        }
+
+        if (empty($this->_errors)) {
+            $this->_passed = true;
+        }
+        return $this;
     }
 
     private function addError($error) {

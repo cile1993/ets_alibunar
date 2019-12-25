@@ -2,6 +2,7 @@
 require_once './private/init.php';
 
 $user = new User();
+$predmet = new Predmet();
 
 if ($user->isLoggedIn()) {
     if ($user->hasPermission('admin')) {
@@ -82,6 +83,8 @@ if ($user->isLoggedIn()) {
                 }
             }
         }
+    } else {
+        Redirect::to('index.php');
     }
 } else {
     Redirect::to(404);
@@ -116,7 +119,15 @@ if ($user->isLoggedIn()) {
 
     <div class="field">
         <label for="smer">Smer</label>
-        <input type="smer" name="smer" id="smer" value="<?php echo escape(Input::get('smer')); ?>">
+        <select name="uloga">
+        <?php
+        foreach ($predmet->_db->getAll('ets_predmeti')->results() as $key) {
+            ?>
+            <option value="<?php echo $key->predmetID?>"><?php echo $key->naziv?></option>
+            <?php
+        }
+        ?>
+        </select>
     </div>
 
     <div class="field">

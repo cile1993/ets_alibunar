@@ -80,7 +80,7 @@ if (!$usert->isLoggedIn()) {
         <input type="hidden" name="token" value="<?php echo Token::generate(); ?>">
         <div class="card-footer">
             <div class="d-flex justify-content-center">
-                <a href="#">Zaboravljena lozinka?</a>
+                <a href="reset.php">Zaboravljena lozinka?</a>
             </div>
         </div>
     </div>

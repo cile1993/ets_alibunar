@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 
 function getBaseUrl() 
@@ -11,6 +12,9 @@ function getBaseUrl()
     return URL;
 }
 
+define('PRIVATE_PATH', __DIR__);
+define('PUBLIC_PATH', dirname(PRIVATE_PATH));
+define('INC', PUBLIC_PATH . '/includes/');
 define('AVATARS', getBaseUrl().'img/avatars/');
 
 $GLOBALS['config'] = array(

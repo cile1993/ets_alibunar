@@ -51,7 +51,6 @@ class DB {
         return $this;
     }
 
-
     // funkcija za query nad bazom
     // DB::getInstance()->action('select *', 'ets_korisnici', ['ime', '=', 'Dejan']);
     public function action($action, $table, $where = array()) {
@@ -72,7 +71,50 @@ class DB {
         }
         return false;
     }
-    
+
+    // funkcija za query nad bazom
+    // DB::getInstance()->action('select *', 'ets_korisnici', ['ime', '=', 'Dejan']);
+    public function actionMulti($action, $table, $where = array(), $where1 = array()) {
+        if (count($where1) === 0) {
+            if (count($where) === 3) {
+                $operators = array('=', '>', '<', '>=', '<=');
+
+                $field = $where[0];
+                $operator = $where[1];
+                $value = $where[2];
+
+                if (in_array($operator, $operators)) {
+                    $sql = "{$action} FROM {$table} WHERE {$field} {$operator} ?";
+
+                    if (!$this->query($sql, array($value))->error()) {
+                        return $this;
+                    }
+                }
+            }
+        } elseif (count($where1) !== 0) {
+            if (count($where) === 3 && count($where1) === 3) {
+                $operators = array('=', '>', '<', '>=', '<=');
+
+                $field = $where[0];
+                $operator = $where[1];
+                $value = $where[2];
+
+                $field1 = $where1[0];
+                $operator1 = $where1[1];
+                $value1 = $where1[2];
+
+                if (in_array($operator, $operators) && in_array($operator1, $operators)) {
+                    $sql = "{$action} FROM {$table} WHERE {$field} {$operator} ?";
+                    $sql = $sql . " AND {$field1} {$operator1} ?";
+                    if (!$this->query($sql, array($value, $value1))->error()) {
+                        return $this;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     // DB::getInstance()->get('ets_korisnici', array('username', '=', 'ime'));
     public function get($table, $where) {
         return $this->action('SELECT *', $table, $where);
@@ -82,6 +124,7 @@ class DB {
     public function getAll($table) {
         return $this->query("SELECT * FROM $table");
     }
+
     //delete funkcija
     public function delete($table, $where) {
         return $this->action('DELETE', $table, $where);
@@ -106,7 +149,6 @@ class DB {
         if (!$this->query($sql, $fields)->error()) {
             return true;
         }
-
         return false;
     }
 
@@ -132,7 +174,7 @@ class DB {
         return false;
     }
 
-    public function updateAdmin($table, $email, $fields) {
+    public function updateAdmin($table, $where, $fields) {
         $set = '';
         $x = 1;
 
@@ -143,13 +185,27 @@ class DB {
             }
             $x++;
         }
+        if (count($where) === 3) {
+            $operators = array('=', '>', '<', '>=', '<=');
 
-        $sql = "UPDATE {$table} SET {$set} WHERE email = '{$email}'";
+            $field = $where[0];
+            $operator = $where[1];
+            $value = $where[2];
 
-        if (!$this->query($sql, $fields)->error()) {
-            return true;
+            if (in_array($operator, $operators)) {
+                $sql = "UPDATE {$table} SET {$set} WHERE email = '{$email}'";
+
+                if (!$this->query($sql, $fields)->error()) {
+                    return true;
+                }
+            }
+        } elseif (count($where) === 0) {
+            $sql = "UPDATE {$table} SET {$set} WHERE email = '{$email}'";
+
+            if (!$this->query($sql, $fields)->error()) {
+                return true;
+            }
         }
-
         return false;
     }
 

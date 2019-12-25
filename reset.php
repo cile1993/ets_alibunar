@@ -191,6 +191,7 @@ if (!$user) {
         </div>
         </form>
         <!-- end reset form -->
+        
         <?php
     }
 }

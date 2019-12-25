@@ -273,6 +273,22 @@ color: white;
 margin-left: 4px;
 }
 
+/*====== SLIDER ======*/
+.carousel {
+  position: relative;
+}
+
+.carousel-caption {
+  position: absolute;
+  background: rgba(0,0,0,0.4);
+  padding: 15px 10px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+}
+
 
 /*====== BOOTSTRAP BREAK POINTS:
 

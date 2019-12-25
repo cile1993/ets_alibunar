@@ -48,10 +48,9 @@ if ($user->hasPermission('admin')) {
                         'required' => false,
                         'min' => 6,
                         'max' => 10
-                    ),
-                    'uloga' => array()
+                    )
                 ));
-
+                $select = $_POST['uloga'];
                 if ($validation->passed()) {
                     try {
                         $user->updateAdmin(array(
@@ -60,7 +59,7 @@ if ($user->hasPermission('admin')) {
                             'email' => escape(Input::get('email')),
                             'smer_predmet' => escape(Input::get('smer')),
                             'telefon' => escape(Input::get('telefon')),
-                            'pristup' => escape(Input::get('uloga'))
+                            'pristup' => escape($select)
                         ));
 
                         Session::msg('home', 'Podaci su azurirani!');
@@ -111,9 +110,9 @@ if ($user->hasPermission('admin')) {
     <div class="field">
         <label for="uloga">Uloga</label>
         <select name="uloga" id="uloga">
-            <option value="korisnik">Korisnik</option>
-            <option value="profesor">Profesor</option>
-            <option value="administrator">Administrator</option>
+            <option value="1">Korisnik</option>
+            <option value="2">Profesor</option>
+            <option value="3">Administrator</option>
         </select>
     </div>
     <input type="hidden" name="token" value="<?php echo Token::generate(); ?>">
